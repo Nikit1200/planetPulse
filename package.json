@@ -1,0 +1,17 @@
+{
+  "name": "planetpulse-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PlanetPulse - Carbon Footprint Tracker (Hackathon Project)",
+  "scripts": {
+    "server": "npm --prefix server start",
+    "client": "npm --prefix client run dev",
+    "dev:server": "npm --prefix server run dev",
+    "dev": "npm run dev:server",
+    "test:server": "npm --prefix server test",
+    "test:client": "npm --prefix client test",
+    "test": "npm --prefix server test && npm --prefix client test",
+    "lint": "npm --prefix client run lint",
+    "build": "npm --prefix client run build"
+  }
+}
