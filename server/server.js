@@ -70,13 +70,13 @@ app.use(notFound);
 // Centralized error handling
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
 
 // Start server if run directly
 if (require.main === module) {
   connectDB().then(() => {
-    app.listen(PORT, () => {
-      console.log(`[PlanetPulse Server] Running on http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`[PlanetPulse Server] Running on port ${PORT}`);
     });
   }).catch((err) => {
     console.error('[PlanetPulse Server] Failed to connect to database:', err.message);
