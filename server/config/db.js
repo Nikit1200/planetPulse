@@ -13,9 +13,23 @@ const sanitizeUri = (uri) => {
 };
 
 const resolveMongoUri = () => {
-  const configuredUri = process.env.MONGODB_URI;
+  const configuredUri = process.env.MONGODB_URI?.trim();
 
   if (configuredUri) {
+    if (process.env.NODE_ENV === 'production') {
+      let hostname;
+
+      try {
+        hostname = new URL(configuredUri).hostname.toLowerCase().replace(/\.$/, '');
+      } catch {
+        throw new Error('MONGODB_URI must be a valid MongoDB connection string in production');
+      }
+
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        throw new Error('MONGODB_URI must not point to localhost in production');
+      }
+    }
+
     return configuredUri;
   }
 
@@ -32,10 +46,9 @@ const resolveMongoUri = () => {
  */
 const connectDB = async () => {
   const uri = resolveMongoUri();
-  const cleanUri = sanitizeUri(uri);
 
   if (process.env.MONGODB_URI) {
-    console.log('[MongoDB] Using environment-provided database URI');
+    console.log('[MongoDB] Using configured database connection');
   } else {
     console.log('[MongoDB] Using local development database');
   }
@@ -44,9 +57,9 @@ const connectDB = async () => {
     await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 3000
     });
-    console.log(`[MongoDB] Successfully connected to database: ${mongoose.connection.host || 'MongoDB'}`);
+    console.log('[MongoDB] Connected successfully');
   } catch (err) {
-    console.warn(`[MongoDB] Primary connection failed for ${cleanUri}: ${err.message}`);
+    console.warn('[MongoDB] Database connection attempt failed');
 
     if (process.env.NODE_ENV !== 'production') {
       try {

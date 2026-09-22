@@ -28,6 +28,18 @@ describe('database configuration', () => {
     expect(() => resolveMongoUri()).toThrow('MONGODB_URI is required in production');
   });
 
+  test.each([
+    'mongodb://localhost:27017/planetpulse',
+    'mongodb://127.0.0.1:27017/planetpulse'
+  ])('rejects localhost MongoDB URIs in production', (uri) => {
+    process.env.NODE_ENV = 'production';
+    process.env.MONGODB_URI = uri;
+
+    const { resolveMongoUri } = require('../config/db');
+
+    expect(() => resolveMongoUri()).toThrow('MONGODB_URI must not point to localhost in production');
+  });
+
   test('falls back to local development connection when MONGODB_URI is missing', () => {
     process.env.NODE_ENV = 'development';
 
